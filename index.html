@@ -1,9 +1,119 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-    <title>나의 첫 웹사이트</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project WIB: Digital Agent Passport</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 </head>
 <body>
-    <h1>GitHub Pages 배포 성공!!!!</h1>
-</head>
+  <div id="app">
+    <div id="sticky-status-bar" class="sticky-bar hidden">
+      <div class="bar-info">
+        <span class="bar-agent" id="bar-display-name">AGENT_X</span>
+        <span class="bar-count">STAMPS: <strong id="bar-stamp-count">0/4</strong></span>
+      </div>
+      <button class="bar-scan-btn" onclick="openAuthModal('egypt', '이집트')">⚡ 빠른 인증</button>
+    </div>
+
+    <section id="screen-intro" class="screen">
+      <div class="commander-area">
+        <p class="classified-tag">[ CLASSIFIED MISSION ]</p>
+        <div class="hq-emblem">WIB</div>
+        <div class="speech-bubble">
+          <span class="speaker-tag">WIB COMMANDER BRIEFING</span>
+          <p id="briefing-text"></p>
+          <div class="briefing-controls">
+            <button id="skip-btn" class="skip-link" onclick="skipToRegistration()">지령 건너뛰기 ≫</button>
+            <button id="next-briefing-btn" class="next-btn" onclick="nextBriefing()">다음 지령 보기 ▶</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-box-wrapper hidden" id="registration">
+        <div class="input-header">
+          <h3>요원 등록 시스템</h3>
+          <p>본명 또는 활동할 코드네임(닉네임)을 입력하십시오.</p>
+        </div>
+        <input type="text" id="agent-name" placeholder="이름 또는 요원명 입력" maxlength="10">
+        <button class="register-submit-btn" onclick="registerAgent()">
+          <span>임무 수락 및 요원증 발급</span>
+        </button>
+      </div>
+    </section>
+
+    <section id="screen-main" class="screen hidden">
+      <header class="main-header">
+        <h1>PROJECT WIB</h1>
+        <p>Global Intelligence Digital Passport</p>
+      </header>
+
+      <div class="id-card">
+        <div class="card-header">OFFICIAL AGENT IDENTIFICATION</div>
+        <div class="card-body">
+          <div class="photo-area">
+            <div class="classified-stamp">CLASSIFIED</div>
+            <div class="agent-symbol">🕵️</div>
+          </div>
+          <div class="info-area">
+            <p class="label">AGENT CODE</p>
+            <p class="val" id="display-name">AGENT_X</p>
+            <p class="label">STATUS</p>
+            <p class="val active-blink">ACTIVE MISSION</p>
+          </div>
+        </div>
+        <div class="stamp-section">
+          <div class="stamp-slot" id="stamp-japan" onclick="openAuthModal('japan', '일본')">
+            <p>🇯🇵</p><span>JAPAN</span>
+            <div class="badge">미완료</div>
+          </div>
+          <div class="stamp-slot" id="stamp-france" onclick="openAuthModal('france', '프랑스')">
+            <p>🇫🇷</p><span>FRANCE</span>
+            <div class="badge">미완료</div>
+          </div>
+          <div class="stamp-slot" id="stamp-egypt" onclick="openAuthModal('egypt', '이집트')">
+            <p>🇪🇬</p><span>EGYPT</span>
+            <div class="badge">미완료</div>
+          </div>
+          <div class="stamp-slot" id="stamp-mexico" onclick="openAuthModal('mexico', '멕시코')">
+            <p>🇲🇽</p><span>MEXICO</span>
+            <div class="badge">미완료</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="booth-info">
+        <article class="card">
+          <h3>이집트 본부 지령</h3>
+          <p class="desc">모래 속 상형문자를 핀셋으로 발굴하고 비밀 암호를 해독하라.</p>
+          <div class="meta">소요시간: 2~3분 | 추천 인원: 2인</div>
+        </article>
+      </div>
+
+      <button class="reset-btn" onclick="resetStamps()">DATA RESET</button>
+    </section>
+  </div>
+
+  <div id="auth-modal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeAuthModal()">&times;</span>
+      <h3 id="modal-title">스탬프 인증</h3>
+      <div class="tab-group">
+        <button id="tab-qr" class="tab-btn active" onclick="switchTab('qr')">QR 스캔</button>
+        <button id="tab-pw" class="tab-btn" onclick="switchTab('pw')">암호 입력</button>
+      </div>
+      <div id="sec-qr" class="tab-content"><div id="qr-reader"></div></div>
+      <div id="sec-pw" class="tab-content hidden">
+        <input type="password" id="pw-input" maxlength="4" placeholder="암호 4자리" inputmode="numeric">
+        <button class="submit-btn" onclick="verifyPassword()">인증</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
 </html>
