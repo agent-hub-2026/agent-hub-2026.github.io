@@ -428,6 +428,19 @@ body.certificate-open { overflow: hidden; }
 }
 
 @media (max-width: 520px) {
+  #app { min-height: 100svh; }
+  .intro-screen {
+    min-height: calc(100svh - 50px);
+    justify-content: center;
+    padding-top: 0;
+  }
+  .intro-screen .commander-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .intro-screen .classified-tag { text-align: center; }
+
   .certificate-reveal-copy { top: 7vh; width: 88%; }
   .certificate-pass-word { font-size: 23vw; }
   .certificate-club-watermark { top: 5vh; right: -34px; width: 170px; }
