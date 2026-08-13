@@ -5,8 +5,7 @@ const BOOTH_DATA = {
     title: '일본 가챠 퀴즈',
     briefing: '요원, 두 개의 가챠통에서 문제를 하나씩 뽑아라. 첫 번째 일본 문화 OX 문제를 판단하고, 두 번째 히라가나 문제는 표를 참고해 숨은 단어를 해독하라.',
     finalObjective: 'OX 정답과 히라가나 단어를 모두 확정한 뒤 진행자에게 최종 확인을 받아라.',
-    password: '1111',
-    qrCode: 'STAMP_JAPAN'
+    password: '1111'
   },
   france: {
     code: 'FR',
@@ -14,8 +13,7 @@ const BOOTH_DATA = {
     title: 'Bonjour, 바게투호',
     briefing: '요원, 바게트를 투호 막대처럼 사용해 지정선에서 바구니를 겨냥하라. 자네에게 주어진 기회는 모두 일곱 번이다.',
     finalObjective: '일곱 번 중 네 번 이상 바구니에 넣어 프랑스 본부의 성공 신호를 확보하라.',
-    password: '1111',
-    qrCode: 'STAMP_FRANCE'
+    password: '1111'
   },
   egypt: {
     code: 'EG',
@@ -23,8 +21,7 @@ const BOOTH_DATA = {
     title: '모래 속 상형문자 발굴 작전',
     briefing: '요원, 미션카드에 적힌 단어를 확인하라. 모래 속에서 필요한 상형문자 카드를 핀셋으로 발굴하고 해독표를 이용해 원래의 소리로 복원해야 한다.',
     finalObjective: '발굴한 카드를 보드판의 순서에 맞게 배열하고 완성된 구호를 외쳐 최종 해독을 증명하라.',
-    password: '1111',
-    qrCode: 'STAMP_EGYPT'
+    password: '1111'
   },
   mexico: {
     code: 'MX',
@@ -32,13 +29,11 @@ const BOOTH_DATA = {
     title: '죽은 자들의 암호',
     briefing: '요원, 빛을 비춰 히든 잉크 편지를 읽어라. 편지의 네 가지 키워드와 제단의 촛불, 기타, 해골, 마리골드를 연결하면 숨겨진 숫자를 찾을 수 있다.',
     finalObjective: '네 숫자를 편지에 적힌 순서대로 조합해 최종 암호를 만들고 현장의 자물쇠를 해제하라.',
-    password: '1111',
-    qrCode: 'STAMP_MEXICO'
+    password: '1111'
   }
 };
 
 let currentTargetBooth = null;
-let html5QrCode = null;
 
 const briefingSteps = [
   '반갑다, 신입 요원. 거대 암호 조직이 세계 곳곳에 비밀 지령을 숨겨두었다는 제보가 들어왔다.',
@@ -405,78 +400,25 @@ function openAuthModal(boothId, title) {
   currentTargetBooth = boothId;
   document.getElementById('modal-title').textContent = `${title} 인증`;
   document.getElementById('auth-modal').classList.remove('hidden');
-  document.getElementById('pw-input').value = '';
-  switchTab('qr');
+  const passwordInput = document.getElementById('pw-input');
+  passwordInput.value = '';
+  requestAnimationFrame(() => passwordInput.focus());
 }
 
 function closeAuthModal() {
   document.getElementById('auth-modal').classList.add('hidden');
-  stopQrScanner();
 }
 
-function switchTab(type) {
-  const tabQr = document.getElementById('tab-qr');
-  const tabPw = document.getElementById('tab-pw');
-  const secQr = document.getElementById('sec-qr');
-  const secPw = document.getElementById('sec-pw');
-
-  if (type === 'qr') {
-    tabQr.classList.add('active');
-    tabPw.classList.remove('active');
-    secQr.classList.remove('hidden');
-    secPw.classList.add('hidden');
-    startQrScanner();
-  } else {
-    tabPw.classList.add('active');
-    tabQr.classList.remove('active');
-    secPw.classList.remove('hidden');
-    secQr.classList.add('hidden');
-    stopQrScanner();
-  }
-}
-
-function startQrScanner() {
-  if (typeof Html5Qrcode === 'undefined') {
-    alert('QR 스캐너를 불러오지 못했습니다. 비밀번호로 인증해 주세요.');
-    switchTab('pw');
-    return;
-  }
-
-  if (!html5QrCode) {
-    html5QrCode = new Html5Qrcode('qr-reader');
-  }
-  if (html5QrCode.isScanning) return;
-
-  const config = { fps: 10, qrbox: { width: 180, height: 180 } };
-  html5QrCode.start(
-    { facingMode: 'environment' },
-    config,
-    (decodedText) => {
-      if (decodedText === BOOTH_DATA[currentTargetBooth].qrCode) {
-        completeStamp(currentTargetBooth);
-      } else {
-        alert('올바른 부스 QR 코드가 아닙니다!');
-      }
-    },
-    () => {}
-  ).catch((error) => console.error(error));
-}
-
-function stopQrScanner() {
-  if (html5QrCode && html5QrCode.isScanning) {
-    html5QrCode.stop()
-      .then(() => html5QrCode.clear())
-      .catch((error) => console.error(error));
-  }
-}
-
-function verifyPassword() {
+function verifyPassword(event) {
+  if (event) event.preventDefault();
   const inputPassword = document.getElementById('pw-input').value;
   if (currentTargetBooth && inputPassword === BOOTH_DATA[currentTargetBooth].password) {
     completeStamp(currentTargetBooth);
   } else {
     alert('비밀번호가 올바르지 않습니다!');
-    document.getElementById('pw-input').value = '';
+    const passwordInput = document.getElementById('pw-input');
+    passwordInput.value = '';
+    passwordInput.focus();
   }
 }
 

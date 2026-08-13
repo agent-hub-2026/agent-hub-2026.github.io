@@ -8,7 +8,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 </head>
 <body>
   <div id="app">
@@ -174,18 +173,16 @@
   </div>
 
   <div id="auth-modal" class="modal hidden">
-    <div class="modal-content">
-      <span class="close-btn" onclick="closeAuthModal()">&times;</span>
+    <div class="modal-content password-auth-content" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <button class="close-btn auth-close-btn" type="button" onclick="closeAuthModal()" aria-label="암호 입력 닫기">&times;</button>
+      <p class="auth-kicker">FIELD AUTHORIZATION</p>
       <h3 id="modal-title">스탬프 인증</h3>
-      <div class="tab-group">
-        <button id="tab-qr" class="tab-btn active" onclick="switchTab('qr')">QR 스캔</button>
-        <button id="tab-pw" class="tab-btn" onclick="switchTab('pw')">암호 입력</button>
-      </div>
-      <div id="sec-qr" class="tab-content"><div id="qr-reader"></div></div>
-      <div id="sec-pw" class="tab-content hidden">
-        <input type="password" id="pw-input" maxlength="4" placeholder="암호 4자리" inputmode="numeric">
-        <button class="submit-btn" onclick="verifyPassword()">인증</button>
-      </div>
+      <p class="auth-description">현장 진행자에게 받은 4자리 암호를 입력하세요.</p>
+      <form class="password-auth-form" onsubmit="verifyPassword(event)">
+        <label for="pw-input">MISSION PASSWORD</label>
+        <input type="password" id="pw-input" maxlength="4" pattern="[0-9]{4}" placeholder="••••" inputmode="numeric" autocomplete="one-time-code" required>
+        <button class="submit-btn" type="submit">암호 확인 · 스탬프 획득</button>
+      </form>
     </div>
   </div>
 
