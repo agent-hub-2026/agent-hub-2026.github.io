@@ -17,7 +17,7 @@
         <span class="bar-agent" id="bar-display-name">AGENT_X</span>
         <span class="bar-count">STAMPS: <strong id="bar-stamp-count">0/4</strong></span>
       </div>
-      <button class="bar-scan-btn" onclick="openAuthModal('egypt', '이집트')">⚡ 빠른 인증</button>
+      <button id="bar-action-btn" class="bar-scan-btn" onclick="openMissionBriefing('egypt')">⚡ 빠른 지령</button>
     </div>
 
     <section id="screen-intro" class="screen">
@@ -67,35 +67,107 @@
           </div>
         </div>
         <div class="stamp-section">
-          <div class="stamp-slot" id="stamp-japan" onclick="openAuthModal('japan', '일본')">
-            <p>🇯🇵</p><span>JAPAN</span>
+          <div class="stamp-slot" id="stamp-japan" onclick="openMissionBriefing('japan')">
+            <p>🇯🇵</p><span class="country-code">JR</span><small>JAPAN</small>
             <div class="badge">미완료</div>
           </div>
-          <div class="stamp-slot" id="stamp-france" onclick="openAuthModal('france', '프랑스')">
-            <p>🇫🇷</p><span>FRANCE</span>
+          <div class="stamp-slot" id="stamp-france" onclick="openMissionBriefing('france')">
+            <p>🇫🇷</p><span class="country-code">FR</span><small>FRANCE</small>
             <div class="badge">미완료</div>
           </div>
-          <div class="stamp-slot" id="stamp-egypt" onclick="openAuthModal('egypt', '이집트')">
-            <p>🇪🇬</p><span>EGYPT</span>
+          <div class="stamp-slot" id="stamp-egypt" onclick="openMissionBriefing('egypt')">
+            <p>🇪🇬</p><span class="country-code">EG</span><small>EGYPT</small>
             <div class="badge">미완료</div>
           </div>
-          <div class="stamp-slot" id="stamp-mexico" onclick="openAuthModal('mexico', '멕시코')">
-            <p>🇲🇽</p><span>MEXICO</span>
+          <div class="stamp-slot" id="stamp-mexico" onclick="openMissionBriefing('mexico')">
+            <p>🇲🇽</p><span class="country-code">MX</span><small>MEXICO</small>
             <div class="badge">미완료</div>
           </div>
         </div>
       </div>
 
       <div id="booth-info">
-        <article class="card">
-          <h3>이집트 본부 지령</h3>
-          <p class="desc">모래 속 상형문자를 핀셋으로 발굴하고 비밀 암호를 해독하라.</p>
-          <div class="meta">소요시간: 2~3분 | 추천 인원: 2인</div>
+        <article class="card mission-selector-guide">
+          <p class="mission-kicker">SELECT YOUR MISSION</p>
+          <h2>국가 코드를 선택해 지령을 확인하세요</h2>
+          <p>JR · FR · EG · MX 중 하나를 누르면 총사령관이 현장 미션과 최종 해결 조건을 전달합니다.</p>
         </article>
       </div>
 
+      <section id="completion-panel" class="completion-panel" aria-live="polite">
+        <div class="completion-lock" id="completion-lock-icon">🔒</div>
+        <p class="mission-kicker">FINAL CLEARANCE</p>
+        <h2>4개국 활동 인증 카드</h2>
+        <p id="completion-message">스탬프 4개를 모두 모으면 활동 인증 카드를 발급할 수 있습니다.</p>
+        <button id="issue-card-btn" class="issue-card-btn" onclick="issueCompletionCard()" disabled>
+          발급 조건 0/4
+        </button>
+      </section>
+
       <button class="reset-btn" onclick="resetStamps()">DATA RESET</button>
     </section>
+  </div>
+
+  <div id="mission-modal" class="modal hidden">
+    <div class="modal-content mission-briefing-content">
+      <span class="close-btn" onclick="closeMissionBriefing()">&times;</span>
+      <div class="mini-commander" aria-hidden="true">WIB</div>
+      <p class="mission-modal-code" id="mission-country-code">MISSION · EG</p>
+      <h3 id="mission-briefing-title">이집트 작전 지령</h3>
+      <p class="commander-line" id="mission-briefing-text"></p>
+      <div class="final-objective">
+        <span>FINAL OBJECTIVE</span>
+        <p id="mission-final-objective"></p>
+      </div>
+      <button id="mission-unlock-btn" class="unlock-btn" onclick="unlockMission()">해독 완료 · 잠금 해제</button>
+    </div>
+  </div>
+
+  <div id="certificate-modal" class="modal certificate-modal hidden" role="dialog" aria-modal="true" aria-labelledby="certificate-title">
+    <div class="certificate-fx" aria-hidden="true">
+      <div class="certificate-flash"></div>
+      <div class="certificate-pass-word">CERTIFIED</div>
+      <div class="certificate-speed-line"></div>
+      <div class="certificate-accent-shape"></div>
+    </div>
+    <div class="certificate-reveal-copy" aria-hidden="true">
+      <span class="certificate-check">✓</span>
+      <div>
+        <span>MISSION COMPLETE</span>
+        <strong>활동 인증 카드 획득</strong>
+      </div>
+    </div>
+    <div class="certificate-dialog">
+      <div class="certificate-particles" aria-hidden="true">
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      </div>
+      <button class="close-btn certificate-close-btn" type="button" onclick="closeCompletionCard()" aria-label="활동 인증 카드 닫기">&times;</button>
+      <article id="completion-card" class="completion-card">
+        <img class="certificate-logo" src="logo.png" alt="SYNODIA 동아리 로고">
+        <p class="certificate-organization">시노디아 세계 문화 체험 축제</p>
+        <h2 id="certificate-title">세계 문화 체험 활동 인증</h2>
+        <p class="certificate-label">CERTIFICATE OF PARTICIPATION</p>
+        <div class="certificate-agent">
+          <span>참가자</span>
+          <strong id="certificate-agent-name">홍길동</strong>
+        </div>
+        <p class="certificate-statement">
+          위 학생은 일본·프랑스·이집트·멕시코의 문화 체험 활동을 성실히 완료하였기에 이 카드를 발급합니다.
+        </p>
+        <div class="certificate-stamps" aria-label="4개국 완료 인증">
+          <div>✓ 일본</div>
+          <div>✓ 프랑스</div>
+          <div>✓ 이집트</div>
+          <div>✓ 멕시코</div>
+        </div>
+        <div class="certificate-meta">
+          <div><span>발급일</span><strong id="certificate-date">2026. 08. 12.</strong></div>
+          <div><span>인증번호</span><strong id="certificate-agent-id">WIB-2026-000000</strong></div>
+        </div>
+        <div class="certificate-seal">활동<br>인증</div>
+      </article>
+      <button class="download-card-btn" onclick="downloadCompletionCard()">JPG 인증 카드 다운로드</button>
+    </div>
   </div>
 
   <div id="auth-modal" class="modal hidden">
