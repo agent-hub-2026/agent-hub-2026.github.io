@@ -1,58 +1,58 @@
 const BOOTH_DATA = {
   japan: {
-    code: 'JR',
+    code: 'JP',
     name: '일본',
     title: '일본 가챠 퀴즈',
-    briefing: '요원, 두 개의 가챠통에서 문제를 하나씩 뽑아라. 첫 번째 일본 문화 OX 문제를 판단하고, 두 번째 히라가나 문제는 표를 참고해 숨은 단어를 해독하라.',
-    finalObjective: 'OX 정답과 히라가나 단어를 모두 확정한 뒤 진행자에게 최종 확인을 받아라.',
+    briefing: '일본에서 용의자를 추적하던 중, 두 개의 가챠 캡슐 속에 암호가 나뉘어 숨겨졌다는 정보를 입수했다. 일본 문화 OX 문제와 히라가나 단어 해독을 완수해 두 암호를 모두 회수해야 한다.',
+    finalObjective: '두 문제의 답을 진행자에게 확인받고 일본 문화와 단어의 의미까지 확인하면 일본 미션 완료다.',
     password: '1111'
   },
   france: {
     code: 'FR',
     name: '프랑스',
     title: 'Bonjour, 바게투호',
-    briefing: '요원, 바게트를 투호 막대처럼 사용해 지정선에서 바구니를 겨냥하라. 자네에게 주어진 기회는 모두 일곱 번이다.',
-    finalObjective: '일곱 번 중 네 번 이상 바구니에 넣어 프랑스 본부의 성공 신호를 확보하라.',
+    briefing: '진행자의 시범과 규칙 설명을 확인한 뒤 지정선에 서라. 타이머가 시작되면 20초 동안 바게트를 투호 막대처럼 던져 바구니를 겨냥하라.',
+    finalObjective: '제한 시간 20초 안에 바게트를 바구니에 3번 이상 넣어 프랑스 미션의 성공 신호를 확보하라.',
     password: '1111'
   },
   egypt: {
     code: 'EG',
     name: '이집트',
     title: '모래 속 상형문자 발굴 작전',
-    briefing: '요원, 미션카드에 적힌 단어를 확인하라. 모래 속에서 필요한 상형문자 카드를 핀셋으로 발굴하고 해독표를 이용해 원래의 소리로 복원해야 한다.',
-    finalObjective: '발굴한 카드를 보드판의 순서에 맞게 배열하고 완성된 구호를 외쳐 최종 해독을 증명하라.',
+    briefing: '2~3글자 단어가 적힌 미션카드 중 1개를 뽑아라. 핀셋으로 모래 속 상형문자 카드를 발굴한 뒤, 해독표를 참고해 미션 단어에 필요한 카드를 찾아내라.',
+    finalObjective: '발굴한 상형문자 카드를 보드판의 번호 순서대로 배열하고 완성된 구호를 외쳐 최종 해독을 증명하라.',
     password: '1111'
   },
   mexico: {
     code: 'MX',
     name: '멕시코',
     title: '죽은 자들의 암호',
-    briefing: '요원, 빛을 비춰 히든 잉크 편지를 읽어라. 편지의 네 가지 키워드와 제단의 촛불, 기타, 해골, 마리골드를 연결하면 숨겨진 숫자를 찾을 수 있다.',
-    finalObjective: '네 숫자를 편지에 적힌 순서대로 조합해 최종 암호를 만들고 현장의 자물쇠를 해제하라.',
+    briefing: 'UV 불빛을 비춰 히든 잉크 편지를 읽고 네 가지 키워드를 찾아라. 각 키워드를 제단의 촛불, 기타, 해골, 마리골드와 연결한 뒤 소품에 숨겨진 숫자를 확인하라.',
+    finalObjective: '찾은 네 숫자를 편지에 적힌 키워드 순서대로 조합해 최종 암호를 만들고 출구의 다이얼 자물쇠를 해제하라.',
     password: '1111'
   }
 };
 
+const BOOTH_ORDER = ['japan', 'france', 'egypt', 'mexico'];
 let currentTargetBooth = null;
 
 const briefingSteps = [
-  '반갑다, 신입 요원. 거대 암호 조직이 세계 곳곳에 비밀 지령을 숨겨두었다는 제보가 들어왔다.',
-  '자네의 임무는 일본, 프랑스, 이집트, 멕시코 4개국 문화 속에 숨겨진 암호를 해독하고 스탬프를 모으는 것이다.',
-  '준비가 되었다면 먼저 자네를 본부에 등록할 코드네임(이름)을 아래 박스에 입력하도록!'
+  '긴급 상황이다. 오늘 새벽 UN 국제문화정보망에서 1급 기밀 문서가 탈취되었다. 추적 결과, 용의자는 문서를 네 조각으로 나누어 각국의 문화 정보 속에 암호화했다.',
+  '자네는 기밀 회수 작전에 투입될 국제 첩보원이다. 일본에서 문화 OX와 히라가나 암호를 풀고, 프랑스에서는 20초 안에 바게트 투호를 세 번 이상 성공시켜라.',
+  '이어서 이집트의 모래 속에서 상형문자를 발굴해 구호를 복원하고, 멕시코의 비밀 편지와 제단에서 네 자리 탈출 암호를 찾아라. 현장 접근 순서는 반드시 일본, 프랑스, 이집트, 멕시코다.',
+  '각 임무를 완수하면 현장 진행자가 4자리 인증 암호를 전달한다. 활동 인증 카드에 암호를 입력해 네 국가의 스탬프를 모두 확보해야 최종 카드가 해제된다.',
+  '발급된 활동 인증 카드는 마지막 제작 구역인 파이널 키 랩스의 출입 증명이다. 아래에 작전 중 사용할 이름이나 별명을 등록하고 국제 첩보 작전을 개시하라.'
 ];
 let currentStep = 0;
 
 function showBriefingStep() {
   document.getElementById('briefing-text').textContent = briefingSteps[currentStep];
   const nextButton = document.getElementById('next-briefing-btn');
-  const skipButton = document.getElementById('skip-btn');
 
   if (currentStep < briefingSteps.length - 1) {
     nextButton.classList.remove('hidden');
-    skipButton.classList.remove('hidden');
   } else {
     nextButton.classList.add('hidden');
-    skipButton.classList.add('hidden');
     document.getElementById('registration').classList.remove('hidden');
   }
 }
@@ -62,11 +62,6 @@ function nextBriefing() {
     currentStep++;
     showBriefingStep();
   }
-}
-
-function skipToRegistration() {
-  currentStep = briefingSteps.length - 1;
-  showBriefingStep();
 }
 
 window.onload = () => {
@@ -90,32 +85,33 @@ function registerAgent() {
 
 function showMainScreen(name) {
   document.getElementById('display-name').textContent = name;
-  document.getElementById('bar-display-name').textContent = name;
   document.getElementById('screen-intro').classList.add('hidden');
   document.getElementById('screen-main').classList.remove('hidden');
-  document.getElementById('sticky-status-bar').classList.remove('hidden');
   loadStamps();
 }
 
 function loadStamps() {
   let completedCount = 0;
-  Object.keys(BOOTH_DATA).forEach((id) => {
+  BOOTH_ORDER.forEach((id) => {
     const isCompleted = localStorage.getItem(`stamp_${id}`) === 'true';
+    const requiredBooth = getRequiredPreviousBooth(id);
+    const isLocked = Boolean(requiredBooth);
     const element = document.getElementById(`stamp-${id}`);
     if (element) {
       element.classList.toggle('completed', isCompleted);
-      element.querySelector('.badge').textContent = isCompleted ? '완료' : '미완료';
+      element.classList.toggle('locked', isLocked);
+      element.setAttribute('aria-disabled', String(isLocked));
+      element.title = isLocked ? `${requiredBooth.name} 미션 완료 후 접근 가능` : `${BOOTH_DATA[id].name} 미션 열기`;
+      element.querySelector('.badge').textContent = isCompleted ? '완료' : (isLocked ? '잠김' : '미완료');
+      element.querySelector('.access-note').textContent = isLocked ? `${requiredBooth.name} 미션 완료 후 접근 가능` : '';
       if (isCompleted) completedCount++;
     }
   });
-  document.getElementById('bar-stamp-count').textContent = `${completedCount}/4`;
-
   const isComplete = completedCount === Object.keys(BOOTH_DATA).length;
   const completionPanel = document.getElementById('completion-panel');
   const issueButton = document.getElementById('issue-card-btn');
   const completionMessage = document.getElementById('completion-message');
   const lockIcon = document.getElementById('completion-lock-icon');
-  const barActionButton = document.getElementById('bar-action-btn');
 
   completionPanel.classList.toggle('unlocked', isComplete);
   issueButton.disabled = !isComplete;
@@ -125,17 +121,28 @@ function loadStamps() {
     : `스탬프 ${4 - completedCount}개를 더 모으면 활동 인증 카드를 발급할 수 있습니다.`;
   lockIcon.textContent = isComplete ? '🏅' : '🔒';
 
-  if (isComplete) {
-    barActionButton.textContent = '🏅 인증 카드';
-    barActionButton.onclick = issueCompletionCard;
-  } else {
-    barActionButton.textContent = '⚡ 빠른 지령';
-    barActionButton.onclick = () => openMissionBriefing('egypt');
-  }
 }
 
 function allMissionsCompleted() {
-  return Object.keys(BOOTH_DATA).every((id) => localStorage.getItem(`stamp_${id}`) === 'true');
+  return BOOTH_ORDER.every((id) => localStorage.getItem(`stamp_${id}`) === 'true');
+}
+
+function getRequiredPreviousBooth(boothId) {
+  const targetIndex = BOOTH_ORDER.indexOf(boothId);
+  if (targetIndex <= 0) return null;
+
+  const previousId = BOOTH_ORDER[targetIndex - 1];
+  return localStorage.getItem(`stamp_${previousId}`) === 'true' ? null : BOOTH_DATA[previousId];
+}
+
+function canAccessBooth(boothId, showAlert = true) {
+  const requiredBooth = getRequiredPreviousBooth(boothId);
+  if (!requiredBooth) return true;
+
+  if (showAlert) {
+    alert(`미션 순서 안내\n먼저 ${requiredBooth.name} 미션을 완료해야 이 국가 인증에 접근할 수 있습니다.`);
+  }
+  return false;
 }
 
 function getOrCreateAgentId() {
@@ -172,19 +179,15 @@ function issueCompletionCard() {
   }
 
   document.getElementById('certificate-agent-name').textContent = agentName;
+  document.getElementById('certificate-agent-initial').textContent = agentName.charAt(0) || '요';
   document.getElementById('certificate-agent-id').textContent = getOrCreateAgentId();
   document.getElementById('certificate-date').textContent = issuedDate;
   const certificateModal = document.getElementById('certificate-modal');
-  const hasSeenReveal = localStorage.getItem('certificate_reveal_seen') === 'true';
 
   certificateModal.classList.remove('hidden', 'reveal-full', 'reveal-quick');
   void certificateModal.offsetWidth;
-  certificateModal.classList.add(hasSeenReveal ? 'reveal-quick' : 'reveal-full');
+  certificateModal.classList.add('reveal-full');
   document.body.classList.add('certificate-open');
-
-  if (!hasSeenReveal) {
-    localStorage.setItem('certificate_reveal_seen', 'true');
-  }
 }
 
 function closeCompletionCard() {
@@ -226,13 +229,35 @@ function drawCenteredLines(context, text, centerX, startY, maxWidth, lineHeight)
   });
 }
 
-function loadCertificateLogo() {
+function loadCertificateImage(src) {
   return new Promise((resolve) => {
-    const logo = new Image();
-    logo.onload = () => resolve(logo);
-    logo.onerror = () => resolve(null);
-    logo.src = 'logo.png';
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => resolve(null);
+    image.src = src;
   });
+}
+
+function drawImageCover(context, image, x, y, width, height) {
+  const scale = Math.max(width / image.width, height / image.height);
+  const sourceWidth = width / scale;
+  const sourceHeight = height / scale;
+  const sourceX = (image.width - sourceWidth) / 2;
+  const sourceY = (image.height - sourceHeight) / 2;
+  context.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, x, y, width, height);
+}
+
+function drawCircularLogoCrop(context, image, centerX, centerY, diameter) {
+  const sourceSize = Math.min(image.width, image.height) * 0.78;
+  const sourceX = (image.width - sourceSize) / 2;
+  const sourceY = (image.height - sourceSize) / 2;
+  const radius = diameter / 2;
+  context.save();
+  context.beginPath();
+  context.arc(centerX, centerY, radius, 0, Math.PI * 2);
+  context.clip();
+  context.drawImage(image, sourceX, sourceY, sourceSize, sourceSize, centerX - radius, centerY - radius, diameter, diameter);
+  context.restore();
 }
 
 async function downloadCompletionCard() {
@@ -246,69 +271,120 @@ async function downloadCompletionCard() {
   const issuedDate = document.getElementById('certificate-date').textContent;
   const canvas = document.createElement('canvas');
   canvas.width = 1200;
-  canvas.height = 750;
+  canvas.height = 1500;
   const context = canvas.getContext('2d');
-  const logo = await loadCertificateLogo();
+  const [hero, logo] = await Promise.all([
+    loadCertificateImage('assets/certificate-mission-hero.png'),
+    loadCertificateImage('logo.png')
+  ]);
 
-  context.fillStyle = '#fbf7ea';
-  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.fillStyle = '#07111d';
+  context.fillRect(0, 0, 1200, 1500);
 
-  context.strokeStyle = '#c9b97f';
-  context.lineWidth = 4;
-  context.strokeRect(22, 22, 1156, 706);
-  context.strokeStyle = '#d9cda5';
-  context.lineWidth = 2;
-  context.strokeRect(40, 40, 1120, 670);
-
-  if (logo) {
-    context.drawImage(logo, 535, 55, 130, 130);
-  } else {
+  if (hero) {
+    context.save();
     context.beginPath();
-    context.arc(600, 120, 52, 0, Math.PI * 2);
-    context.strokeStyle = '#315a45';
-    context.lineWidth = 3;
-    context.stroke();
-    context.fillStyle = '#315a45';
-    context.font = '700 20px sans-serif';
-    context.textAlign = 'center';
-    context.fillText('SYNODIA', 600, 127);
+    context.rect(0, 0, 1200, 590);
+    context.clip();
+    drawImageCover(context, hero, 0, 0, 1200, 590);
+    const shade = context.createLinearGradient(0, 0, 1200, 0);
+    shade.addColorStop(0, 'rgba(1, 9, 24, 0.34)');
+    shade.addColorStop(0.58, 'rgba(1, 9, 24, 0.08)');
+    context.fillStyle = shade;
+    context.fillRect(0, 0, 1200, 590);
+    const lowerShade = context.createLinearGradient(0, 360, 0, 590);
+    lowerShade.addColorStop(0, 'rgba(2, 11, 26, 0)');
+    lowerShade.addColorStop(1, 'rgba(2, 11, 26, 0.58)');
+    context.fillStyle = lowerShade;
+    context.fillRect(0, 340, 1200, 250);
+    context.restore();
+  } else {
+    context.fillStyle = '#07152c';
+    context.fillRect(0, 0, 1200, 590);
   }
 
-  context.textAlign = 'center';
-  context.fillStyle = '#314c5f';
-  context.font = '700 17px sans-serif';
-  context.fillText('시노디아 세계 문화 체험 축제', 600, 205);
+  context.textAlign = 'left';
+  context.fillStyle = '#ffffff';
+  context.font = '700 25px sans-serif';
+  context.fillText('동화고등학교 국제학부', 76, 100);
+  context.font = '700 48px sans-serif';
+  context.fillText('UN 1급 기밀 탈취 사건:', 76, 184);
+  context.fillText('4개국에 숨겨진 암호를 찾아라', 76, 246);
+  context.fillStyle = '#7ef0dc';
+  context.font = '700 25px sans-serif';
+  context.fillText('4개국 문화 체험', 76, 306);
+  context.textAlign = 'right';
+  context.fillStyle = 'rgba(220, 240, 255, 0.78)';
+  context.font = '700 16px monospace';
+  context.fillText('PROJECT WIB · 2026', 1124, 548);
 
-  context.fillStyle = '#173752';
-  context.font = '700 42px Georgia, serif';
-  context.fillText('세계 문화 체험 활동 인증', 600, 266);
-  context.fillStyle = '#80785f';
-  context.font = '400 15px Georgia, serif';
-  context.fillText('CERTIFICATE OF PARTICIPATION', 600, 296);
-
-  context.fillStyle = '#7a837d';
-  context.font = '700 14px sans-serif';
-  context.fillText('참가자', 600, 340);
-  context.fillStyle = '#101d28';
-  context.font = '700 43px sans-serif';
-  context.fillText(agentName, 600, 390);
-  context.strokeStyle = '#8e9b8b';
+  const bodyGradient = context.createLinearGradient(0, 590, 1200, 1500);
+  bodyGradient.addColorStop(0, '#0b1b2b');
+  bodyGradient.addColorStop(1, '#050e17');
+  context.fillStyle = bodyGradient;
+  context.fillRect(0, 590, 1200, 910);
+  context.strokeStyle = 'rgba(0, 255, 157, 0.055)';
   context.lineWidth = 1;
-  context.beginPath();
-  context.moveTo(420, 404);
-  context.lineTo(780, 404);
-  context.stroke();
+  for (let x = 0; x <= 1200; x += 44) {
+    context.beginPath();
+    context.moveTo(x, 590);
+    context.lineTo(x, 1500);
+    context.stroke();
+  }
+  for (let y = 590; y <= 1500; y += 44) {
+    context.beginPath();
+    context.moveTo(0, y);
+    context.lineTo(1200, y);
+    context.stroke();
+  }
 
-  context.fillStyle = '#59636a';
-  context.font = '400 20px sans-serif';
-  drawCenteredLines(
-    context,
-    '위 학생은 일본·프랑스·이집트·멕시코의 문화 체험 활동을 성실히 완료하였기에 이 카드를 발급합니다.',
-    600,
-    444,
-    760,
-    29
-  );
+  const portraitX = 78;
+  const portraitY = 660;
+  const portraitWidth = 300;
+  const portraitHeight = 390;
+  const portraitGradient = context.createLinearGradient(portraitX, portraitY, portraitX, portraitY + portraitHeight);
+  portraitGradient.addColorStop(0, '#143247');
+  portraitGradient.addColorStop(1, '#07131f');
+  context.fillStyle = portraitGradient;
+  drawRoundedRect(context, portraitX, portraitY, portraitWidth, portraitHeight, 28);
+  context.fill();
+  context.strokeStyle = 'rgba(0, 255, 157, 0.38)';
+  context.lineWidth = 3;
+  context.stroke();
+  context.fillStyle = '#16405a';
+  context.beginPath();
+  context.arc(228, 800, 104, 0, Math.PI * 2);
+  context.fill();
+  context.beginPath();
+  context.ellipse(228, 1035, 176, 150, 0, Math.PI, Math.PI * 2);
+  context.fill();
+  context.textAlign = 'center';
+  context.fillStyle = '#ffffff';
+  context.font = '700 76px sans-serif';
+  context.fillText(agentName.charAt(0) || '요', 228, 827);
+
+  const rows = [
+    ['이름', agentName],
+    ['역할', '국제 첩보원'],
+    ['소속', '동화고등학교'],
+    ['상태', '임무 완료']
+  ];
+  rows.forEach(([label, value], index) => {
+    const y = 675 + (index * 94);
+    context.textAlign = 'left';
+    context.fillStyle = '#e3b341';
+    context.font = '700 19px sans-serif';
+    context.fillText(label, 430, y + 42);
+    context.fillStyle = '#f3fbff';
+    context.font = '700 30px sans-serif';
+    context.fillText(value, 570, y + 43);
+    context.strokeStyle = 'rgba(126, 240, 220, 0.2)';
+    context.lineWidth = 2;
+    context.beginPath();
+    context.moveTo(430, y + 70);
+    context.lineTo(1115, y + 70);
+    context.stroke();
+  });
 
   const stampData = [
     '✓ 일본',
@@ -316,41 +392,79 @@ async function downloadCompletionCard() {
     '✓ 이집트',
     '✓ 멕시코'
   ];
-  const stampPositions = [235, 480, 725, 970];
+  const stampPositions = [205, 468, 731, 994];
   stampData.forEach((label, index) => {
-    const x = stampPositions[index] - 95;
-    context.fillStyle = '#eff3e9';
-    drawRoundedRect(context, x, 505, 190, 54, 8);
+    const x = stampPositions[index] - 112;
+    context.fillStyle = 'rgba(0, 255, 157, 0.1)';
+    drawRoundedRect(context, x, 1100, 224, 66, 12);
     context.fill();
-    context.fillStyle = '#315a45';
-    context.font = '700 20px sans-serif';
-    context.fillText(label, stampPositions[index], 539);
+    context.strokeStyle = 'rgba(0, 255, 157, 0.46)';
+    context.lineWidth = 2;
+    context.stroke();
+    context.fillStyle = '#aaffd5';
+    context.textAlign = 'center';
+    context.font = '700 22px sans-serif';
+    context.fillText(label, stampPositions[index], 1142);
   });
 
-  context.textAlign = 'left';
-  context.fillStyle = '#8a826d';
-  context.font = '700 13px sans-serif';
-  context.fillText('발급일', 100, 625);
-  context.fillText('인증번호', 560, 625);
-  context.fillStyle = '#4d554f';
-  context.font = '700 18px monospace';
-  context.fillText(issuedDate, 100, 654);
-  context.fillText(agentId, 560, 654);
-
-  context.save();
-  context.translate(1055, 628);
-  context.rotate(-8 * Math.PI / 180);
+  const footerGradient = context.createLinearGradient(0, 1190, 1200, 1500);
+  footerGradient.addColorStop(0, '#071621');
+  footerGradient.addColorStop(1, '#04101a');
+  context.fillStyle = footerGradient;
+  context.fillRect(0, 1190, 1200, 310);
+  context.strokeStyle = 'rgba(0, 255, 157, 0.55)';
+  context.lineWidth = 3;
   context.beginPath();
-  context.arc(0, 0, 48, 0, Math.PI * 2);
-  context.strokeStyle = 'rgba(163, 55, 55, 0.78)';
-  context.lineWidth = 4;
+  context.moveTo(0, 1191);
+  context.lineTo(1200, 1191);
   context.stroke();
-  context.fillStyle = 'rgba(163, 55, 55, 0.82)';
-  context.textAlign = 'center';
-  context.font = '700 17px sans-serif';
-  context.fillText('활동', 0, -2);
-  context.fillText('인증', 0, 20);
-  context.restore();
+
+  if (logo) {
+    context.fillStyle = '#07131f';
+    context.beginPath();
+    context.arc(160, 1344, 88, 0, Math.PI * 2);
+    context.fill();
+    drawCircularLogoCrop(context, logo, 160, 1344, 166);
+    context.strokeStyle = 'rgba(0, 255, 157, 0.78)';
+    context.lineWidth = 5;
+    context.beginPath();
+    context.arc(160, 1344, 86, 0, Math.PI * 2);
+    context.stroke();
+  } else {
+    context.beginPath();
+    context.arc(160, 1344, 84, 0, Math.PI * 2);
+    context.strokeStyle = '#00ff9d';
+    context.lineWidth = 5;
+    context.stroke();
+    context.fillStyle = '#aaffd5';
+    context.textAlign = 'center';
+    context.font = '700 24px sans-serif';
+    context.fillText('SYNODIA', 160, 1352);
+  }
+
+  const metaBoxes = [
+    { x: 300, width: 300, label: '발급일', value: issuedDate },
+    { x: 630, width: 490, label: '인증번호', value: agentId }
+  ];
+  metaBoxes.forEach(({ x, width, label, value }) => {
+    context.fillStyle = 'rgba(255, 255, 255, 0.035)';
+    drawRoundedRect(context, x, 1284, width, 122, 16);
+    context.fill();
+    context.strokeStyle = 'rgba(126, 240, 220, 0.2)';
+    context.lineWidth = 2;
+    context.stroke();
+    context.textAlign = 'left';
+    context.fillStyle = '#7ef0dc';
+    context.font = '700 17px sans-serif';
+    context.fillText(label, x + 24, 1323);
+    context.fillStyle = '#f4fbff';
+    context.font = '700 23px monospace';
+    context.fillText(value, x + 24, 1370);
+  });
+
+  context.strokeStyle = 'rgba(0, 255, 157, 0.7)';
+  context.lineWidth = 4;
+  context.strokeRect(18, 18, 1164, 1464);
 
   canvas.toBlob((blob) => {
     if (!blob) {
@@ -361,7 +475,7 @@ async function downloadCompletionCard() {
     const downloadUrl = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = downloadUrl;
-    link.download = `시노디아_활동인증카드_${safeName}.jpg`;
+    link.download = `WIB_4개국문화체험_활동인증카드_${safeName}.jpg`;
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -372,10 +486,15 @@ async function downloadCompletionCard() {
 function openMissionBriefing(boothId) {
   const booth = BOOTH_DATA[boothId];
   if (!booth) return;
+  if (!canAccessBooth(boothId)) return;
 
   currentTargetBooth = boothId;
+  const agentName = (localStorage.getItem('agent_name') || '신입').trim();
+  document.getElementById('mission-country-flag').dataset.country = boothId;
+  document.getElementById('mission-country-name').textContent = booth.name;
   document.getElementById('mission-country-code').textContent = `MISSION · ${booth.code}`;
-  document.getElementById('mission-briefing-title').textContent = `${booth.name} · ${booth.title}`;
+  document.getElementById('mission-briefing-title').textContent = booth.title;
+  document.getElementById('mission-agent-name').textContent = agentName;
   document.getElementById('mission-briefing-text').textContent = booth.briefing;
   document.getElementById('mission-final-objective').textContent = booth.finalObjective;
   document.getElementById('mission-unlock-btn').textContent = localStorage.getItem(`stamp_${boothId}`) === 'true'
@@ -391,12 +510,14 @@ function closeMissionBriefing() {
 function unlockMission() {
   if (!currentTargetBooth) return;
   const boothId = currentTargetBooth;
+  if (!canAccessBooth(boothId)) return;
   const boothName = BOOTH_DATA[boothId].name;
   closeMissionBriefing();
   openAuthModal(boothId, boothName);
 }
 
 function openAuthModal(boothId, title) {
+  if (!BOOTH_DATA[boothId] || !canAccessBooth(boothId)) return;
   currentTargetBooth = boothId;
   document.getElementById('modal-title').textContent = `${title} 인증`;
   document.getElementById('auth-modal').classList.remove('hidden');
@@ -423,6 +544,10 @@ function verifyPassword(event) {
 }
 
 function completeStamp(boothId) {
+  if (!BOOTH_DATA[boothId] || !canAccessBooth(boothId)) {
+    closeAuthModal();
+    return;
+  }
   const wasAllComplete = allMissionsCompleted();
   localStorage.setItem(`stamp_${boothId}`, 'true');
   loadStamps();
