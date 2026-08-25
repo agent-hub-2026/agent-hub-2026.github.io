@@ -402,10 +402,10 @@ async function downloadCompletionCard() {
   });
 
   const stampData = [
-    '✓ 일본',
-    '✓ 프랑스',
-    '✓ 이집트',
-    '✓ 멕시코'
+    '일본 🇯🇵',
+    '프랑스 🇫🇷',
+    '이집트 🇪🇬',
+    '멕시코 🇲🇽'
   ];
   const stampPositions = [205, 468, 731, 994];
   stampData.forEach((label, index) => {
@@ -418,7 +418,7 @@ async function downloadCompletionCard() {
     context.stroke();
     context.fillStyle = '#aaffd5';
     context.textAlign = 'center';
-    context.font = '700 22px sans-serif';
+    context.font = "700 22px 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif";
     context.fillText(label, stampPositions[index], 1142);
   });
 
