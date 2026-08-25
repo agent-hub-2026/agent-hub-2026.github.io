@@ -34,7 +34,10 @@ const BOOTH_DATA = {
 };
 
 const BOOTH_ORDER = ['japan', 'france', 'egypt', 'mexico'];
+const ADMIN_ACCESS_NAME = '시노디아관리자';
+const ADMIN_ACCESS_PASSWORD = '13';
 let currentTargetBooth = null;
+let adminIssuanceMode = false;
 
 const briefingSteps = [
   '긴급 상황이다. 오늘 새벽 UN 국제문화정보망에서 1급 기밀 문서가 탈취되었다. 추적 결과, 용의자는 문서를 네 조각으로 나누어 각국의 문화 정보 속에 암호화했다.',
@@ -65,6 +68,11 @@ function nextBriefing() {
 }
 
 window.onload = () => {
+  if (localStorage.getItem('admin_device_mode') === 'true') {
+    showBriefingStep();
+    openAdminAccess();
+    return;
+  }
   const savedName = localStorage.getItem('agent_name');
   if (savedName) {
     showMainScreen(savedName);
@@ -79,8 +87,78 @@ function registerAgent() {
     alert('코드네임을 입력하십시오!');
     return;
   }
+  if (name === ADMIN_ACCESS_NAME) {
+    localStorage.setItem('admin_device_mode', 'true');
+    openAdminAccess();
+    return;
+  }
   localStorage.setItem('agent_name', name);
   showMainScreen(name);
+}
+
+function openAdminAccess() {
+  adminIssuanceMode = false;
+  document.getElementById('admin-auth-panel').classList.remove('hidden');
+  document.getElementById('admin-issue-panel').classList.add('hidden');
+  document.getElementById('admin-modal').classList.remove('hidden');
+  const passwordInput = document.getElementById('admin-password');
+  passwordInput.value = '';
+  requestAnimationFrame(() => passwordInput.focus());
+}
+
+function verifyAdminPassword(event) {
+  if (event) event.preventDefault();
+  const passwordInput = document.getElementById('admin-password');
+  if (passwordInput.value !== ADMIN_ACCESS_PASSWORD) {
+    alert('관리자 비밀번호가 올바르지 않습니다.');
+    passwordInput.value = '';
+    passwordInput.focus();
+    return;
+  }
+
+  adminIssuanceMode = true;
+  document.getElementById('admin-auth-panel').classList.add('hidden');
+  document.getElementById('admin-issue-panel').classList.remove('hidden');
+  const participantInput = document.getElementById('admin-participant-name');
+  participantInput.value = '';
+  requestAnimationFrame(() => participantInput.focus());
+}
+
+function issueAdminCertificate(event) {
+  if (event) event.preventDefault();
+  if (!adminIssuanceMode) {
+    openAdminAccess();
+    return;
+  }
+
+  const participantInput = document.getElementById('admin-participant-name');
+  const participantName = participantInput.value.trim();
+  if (!participantName) {
+    alert('인증 카드를 발급할 참가자 이름을 입력하세요.');
+    participantInput.focus();
+    return;
+  }
+
+  localStorage.setItem('agent_name', participantName);
+  BOOTH_ORDER.forEach((boothId) => localStorage.setItem(`stamp_${boothId}`, 'true'));
+  localStorage.removeItem('agent_id');
+  localStorage.removeItem('certificate_issued_date');
+  localStorage.removeItem('certificate_issued_date_key');
+  participantInput.value = '';
+  document.getElementById('admin-modal').classList.add('hidden');
+  issueCompletionCard();
+}
+
+function exitAdminMode() {
+  adminIssuanceMode = false;
+  localStorage.removeItem('admin_device_mode');
+  localStorage.removeItem('agent_name');
+  localStorage.removeItem('agent_id');
+  localStorage.removeItem('certificate_issued_date');
+  localStorage.removeItem('certificate_issued_date_key');
+  BOOTH_ORDER.forEach((boothId) => localStorage.removeItem(`stamp_${boothId}`));
+  document.getElementById('admin-modal').classList.add('hidden');
+  location.reload();
 }
 
 function showMainScreen(name) {
@@ -210,6 +288,10 @@ function closeCompletionCard() {
   certificateModal.classList.add('hidden');
   certificateModal.classList.remove('reveal-full', 'reveal-quick');
   document.body.classList.remove('certificate-open');
+  if (adminIssuanceMode) {
+    document.getElementById('admin-modal').classList.remove('hidden');
+    requestAnimationFrame(() => document.getElementById('admin-participant-name').focus());
+  }
 }
 
 function drawRoundedRect(context, x, y, width, height, radius) {
@@ -382,17 +464,19 @@ async function downloadCompletionCard() {
     ['이름', agentName],
     ['역할', '국제 첩보원'],
     ['소속', '동화고등학교'],
-    ['상태', '임무 완료']
+    [null, '4개국 활동 인증']
   ];
   rows.forEach(([label, value], index) => {
     const y = 675 + (index * 94);
     context.textAlign = 'left';
-    context.fillStyle = '#e3b341';
-    context.font = '700 19px sans-serif';
-    context.fillText(label, 430, y + 42);
+    if (label) {
+      context.fillStyle = '#e3b341';
+      context.font = '700 19px sans-serif';
+      context.fillText(label, 430, y + 42);
+    }
     context.fillStyle = '#f3fbff';
     context.font = '700 30px sans-serif';
-    context.fillText(value, 570, y + 43);
+    context.fillText(value, label ? 570 : 430, y + 43);
     context.strokeStyle = 'rgba(126, 240, 220, 0.2)';
     context.lineWidth = 2;
     context.beginPath();
