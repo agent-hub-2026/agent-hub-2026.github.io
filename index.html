@@ -116,7 +116,7 @@
         <span>FINAL OBJECTIVE</span>
         <p id="mission-final-objective"></p>
       </div>
-      <button id="mission-unlock-btn" class="unlock-btn" onclick="unlockMission()">해독 완료 · 잠금 해제</button>
+      <button id="mission-unlock-btn" class="unlock-btn" onclick="unlockMission()">해독 완료</button>
     </div>
   </div>
 
@@ -165,8 +165,8 @@
               <img class="certificate-logo" src="logo.png" alt="SYNODIA 동아리 로고">
             </div>
             <div class="certificate-meta">
-              <div><span>발급일</span><strong id="certificate-date">2026. 08. 12.</strong></div>
-              <div><span>인증번호</span><strong id="certificate-agent-id">WIB-2026-000000</strong></div>
+              <div><span>발급일</span><strong id="certificate-date">2026. 08. 28.</strong></div>
+              <div><span>인증번호</span><strong id="certificate-agent-id">WIB-2026-0828-01</strong></div>
             </div>
           </div>
         </div>
@@ -180,11 +180,11 @@
       <button class="close-btn auth-close-btn" type="button" onclick="closeAuthModal()" aria-label="암호 입력 닫기">&times;</button>
       <p class="auth-kicker">FIELD AUTHORIZATION</p>
       <h3 id="modal-title">스탬프 인증</h3>
-      <p class="auth-description">현장 진행자에게 받은 4자리 암호를 입력하세요.</p>
+      <p class="auth-description">현장 진행자에게 받은 2자리 암호를 입력하세요.</p>
       <form class="password-auth-form" onsubmit="verifyPassword(event)">
         <label for="pw-input">MISSION PASSWORD</label>
-        <input type="password" id="pw-input" maxlength="4" pattern="[0-9]{4}" placeholder="••••" inputmode="numeric" autocomplete="one-time-code" required>
-        <button class="submit-btn" type="submit">암호 확인 · 스탬프 획득</button>
+        <input type="password" id="pw-input" maxlength="2" pattern="[0-9]{2}" placeholder="••" inputmode="numeric" autocomplete="one-time-code" required>
+        <button class="submit-btn" type="submit">스탬프 획득</button>
       </form>
     </div>
   </div>

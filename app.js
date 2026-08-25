@@ -5,7 +5,7 @@ const BOOTH_DATA = {
     title: '일본 가챠 퀴즈',
     briefing: '일본에서 용의자를 추적하던 중, 두 개의 가챠 캡슐 속에 암호가 나뉘어 숨겨졌다는 정보를 입수했다. 일본 문화 OX 문제와 히라가나 단어 해독을 완수해 두 암호를 모두 회수해야 한다.',
     finalObjective: '두 문제의 답을 진행자에게 확인받고 일본 문화와 단어의 의미까지 확인하면 일본 미션 완료다.',
-    password: '1111'
+    password: '81'
   },
   france: {
     code: 'FR',
@@ -13,7 +13,7 @@ const BOOTH_DATA = {
     title: 'Bonjour, 바게투호',
     briefing: '진행자의 시범과 규칙 설명을 확인한 뒤 지정선에 서라. 타이머가 시작되면 20초 동안 바게트를 투호 막대처럼 던져 바구니를 겨냥하라.',
     finalObjective: '제한 시간 20초 안에 바게트를 바구니에 3번 이상 넣어 프랑스 미션의 성공 신호를 확보하라.',
-    password: '1111'
+    password: '33'
   },
   egypt: {
     code: 'EG',
@@ -21,7 +21,7 @@ const BOOTH_DATA = {
     title: '모래 속 상형문자 발굴 작전',
     briefing: '2~3글자 단어가 적힌 미션카드 중 1개를 뽑아라. 핀셋으로 모래 속 상형문자 카드를 발굴한 뒤, 해독표를 참고해 미션 단어에 필요한 카드를 찾아내라.',
     finalObjective: '발굴한 상형문자 카드를 보드판의 번호 순서대로 배열하고 완성된 구호를 외쳐 최종 해독을 증명하라.',
-    password: '1111'
+    password: '20'
   },
   mexico: {
     code: 'MX',
@@ -29,7 +29,7 @@ const BOOTH_DATA = {
     title: '죽은 자들의 암호',
     briefing: 'UV 불빛을 비춰 히든 잉크 편지를 읽고 네 가지 키워드를 찾아라. 각 키워드를 제단의 촛불, 기타, 해골, 마리골드와 연결한 뒤 소품에 숨겨진 숫자를 확인하라.',
     finalObjective: '찾은 네 숫자를 편지에 적힌 키워드 순서대로 조합해 최종 암호를 만들고 출구의 다이얼 자물쇠를 해제하라.',
-    password: '1111'
+    password: '52'
   }
 };
 
@@ -40,7 +40,7 @@ const briefingSteps = [
   '긴급 상황이다. 오늘 새벽 UN 국제문화정보망에서 1급 기밀 문서가 탈취되었다. 추적 결과, 용의자는 문서를 네 조각으로 나누어 각국의 문화 정보 속에 암호화했다.',
   '자네는 기밀 회수 작전에 투입될 국제 첩보원이다. 일본에서 문화 OX와 히라가나 암호를 풀고, 프랑스에서는 20초 안에 바게트 투호를 세 번 이상 성공시켜라.',
   '이어서 이집트의 모래 속에서 상형문자를 발굴해 구호를 복원하고, 멕시코의 비밀 편지와 제단에서 네 자리 탈출 암호를 찾아라. 현장 접근 순서는 반드시 일본, 프랑스, 이집트, 멕시코다.',
-  '각 임무를 완수하면 현장 진행자가 4자리 인증 암호를 전달한다. 활동 인증 카드에 암호를 입력해 네 국가의 스탬프를 모두 확보해야 최종 카드가 해제된다.',
+  '각 임무를 완수하면 현장 진행자가 2자리 인증 암호를 전달한다. 활동 인증 카드에 암호를 입력해 네 국가의 스탬프를 모두 확보해야 최종 카드가 해제된다.',
   '발급된 활동 인증 카드는 마지막 제작 구역인 파이널 키 랩스의 출입 증명이다. 아래에 작전 중 사용할 이름이나 별명을 등록하고 국제 첩보 작전을 개시하라.'
 ];
 let currentStep = 0;
@@ -145,17 +145,33 @@ function canAccessBooth(boothId, showAlert = true) {
   return false;
 }
 
-function getOrCreateAgentId() {
-  let agentId = localStorage.getItem('agent_id');
-  if (agentId) return agentId;
+function getSeoulDateInfo() {
+  const dateParts = new Intl.DateTimeFormat('en-CA', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    timeZone: 'Asia/Seoul'
+  }).formatToParts(new Date());
+  const getPart = (type) => dateParts.find((part) => part.type === type)?.value || '';
+  const year = getPart('year');
+  const month = getPart('month');
+  const day = getPart('day');
 
-  let randomValue = Math.floor(Math.random() * 1000000);
-  if (window.crypto && window.crypto.getRandomValues) {
-    const values = new Uint32Array(1);
-    window.crypto.getRandomValues(values);
-    randomValue = values[0] % 1000000;
-  }
-  agentId = `WIB-2026-${String(randomValue).padStart(6, '0')}`;
+  return {
+    dateKey: `${year}${month}${day}`,
+    displayDate: `${year}. ${month}. ${day}.`
+  };
+}
+
+function getOrCreateAgentId(dateKey) {
+  let agentId = localStorage.getItem('agent_id');
+  const expectedPrefix = `WIB-${dateKey.slice(0, 4)}-${dateKey.slice(4)}`;
+  if (agentId?.startsWith(`${expectedPrefix}-`)) return agentId;
+
+  const sequenceKey = `certificate_sequence_${dateKey}`;
+  const nextSequence = (Number.parseInt(localStorage.getItem(sequenceKey), 10) || 0) + 1;
+  agentId = `${expectedPrefix}-${String(nextSequence).padStart(2, '0')}`;
+  localStorage.setItem(sequenceKey, String(nextSequence));
   localStorage.setItem('agent_id', agentId);
   return agentId;
 }
@@ -167,20 +183,19 @@ function issueCompletionCard() {
   }
 
   const agentName = localStorage.getItem('agent_name') || 'AGENT_X';
+  const currentDate = getSeoulDateInfo();
+  let issuedDateKey = localStorage.getItem('certificate_issued_date_key');
   let issuedDate = localStorage.getItem('certificate_issued_date');
-  if (!issuedDate) {
-    issuedDate = new Date().toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      timeZone: 'Asia/Seoul'
-    });
+  if (!issuedDate || !issuedDateKey) {
+    issuedDateKey = currentDate.dateKey;
+    issuedDate = currentDate.displayDate;
+    localStorage.setItem('certificate_issued_date_key', issuedDateKey);
     localStorage.setItem('certificate_issued_date', issuedDate);
   }
 
   document.getElementById('certificate-agent-name').textContent = agentName;
   document.getElementById('certificate-agent-initial').textContent = agentName.charAt(0) || '요';
-  document.getElementById('certificate-agent-id').textContent = getOrCreateAgentId();
+  document.getElementById('certificate-agent-id').textContent = getOrCreateAgentId(issuedDateKey);
   document.getElementById('certificate-date').textContent = issuedDate;
   const certificateModal = document.getElementById('certificate-modal');
 
@@ -248,15 +263,15 @@ function drawImageCover(context, image, x, y, width, height) {
 }
 
 function drawCircularLogoCrop(context, image, centerX, centerY, diameter) {
-  const sourceSize = Math.min(image.width, image.height) * 0.78;
-  const sourceX = (image.width - sourceSize) / 2;
-  const sourceY = (image.height - sourceSize) / 2;
   const radius = diameter / 2;
+  const logoSize = diameter * 0.7;
   context.save();
   context.beginPath();
   context.arc(centerX, centerY, radius, 0, Math.PI * 2);
   context.clip();
-  context.drawImage(image, sourceX, sourceY, sourceSize, sourceSize, centerX - radius, centerY - radius, diameter, diameter);
+  context.fillStyle = '#f8f7e7';
+  context.fillRect(centerX - radius, centerY - radius, diameter, diameter);
+  context.drawImage(image, centerX - (logoSize / 2), centerY - (logoSize / 2), logoSize, logoSize);
   context.restore();
 }
 
@@ -455,11 +470,11 @@ async function downloadCompletionCard() {
     context.stroke();
     context.textAlign = 'left';
     context.fillStyle = '#7ef0dc';
-    context.font = '700 17px sans-serif';
-    context.fillText(label, x + 24, 1323);
+    context.font = '700 23px sans-serif';
+    context.fillText(label, x + 24, 1325);
     context.fillStyle = '#f4fbff';
-    context.font = '700 23px monospace';
-    context.fillText(value, x + 24, 1370);
+    context.font = '700 31px monospace';
+    context.fillText(value, x + 24, 1374);
   });
 
   context.strokeStyle = 'rgba(0, 255, 157, 0.7)';
@@ -499,7 +514,7 @@ function openMissionBriefing(boothId) {
   document.getElementById('mission-final-objective').textContent = booth.finalObjective;
   document.getElementById('mission-unlock-btn').textContent = localStorage.getItem(`stamp_${boothId}`) === 'true'
     ? '인증 완료 · 기록 다시 보기'
-    : '해독 완료 · 잠금 해제';
+    : '해독 완료';
   document.getElementById('mission-modal').classList.remove('hidden');
 }
 
@@ -561,7 +576,10 @@ function completeStamp(boothId) {
 
 function resetStamps() {
   if (confirm('모든 요원 데이터와 스탬프를 초기화하시겠습니까?')) {
+    const issueSequences = Object.entries(localStorage)
+      .filter(([key]) => key.startsWith('certificate_sequence_'));
     localStorage.clear();
+    issueSequences.forEach(([key, value]) => localStorage.setItem(key, value));
     location.reload();
   }
 }
