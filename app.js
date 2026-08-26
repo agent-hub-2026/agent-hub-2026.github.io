@@ -272,7 +272,6 @@ function issueCompletionCard() {
   }
 
   document.getElementById('certificate-agent-name').textContent = agentName;
-  document.getElementById('certificate-agent-initial').textContent = agentName.charAt(0) || '요';
   document.getElementById('certificate-agent-id').textContent = getOrCreateAgentId(issuedDateKey);
   document.getElementById('certificate-date').textContent = issuedDate;
   const certificateModal = document.getElementById('certificate-modal');
@@ -346,14 +345,27 @@ function drawImageCover(context, image, x, y, width, height) {
 
 function drawCircularLogoCrop(context, image, centerX, centerY, diameter) {
   const radius = diameter / 2;
-  const logoSize = diameter * 0.7;
+  const sourceSize = Math.min(image.width, image.height) * 0.73;
+  const sourceX = (image.width - sourceSize) / 2;
+  const sourceY = (image.height - sourceSize) / 2;
+  const logoSize = diameter * 0.8;
   context.save();
   context.beginPath();
   context.arc(centerX, centerY, radius, 0, Math.PI * 2);
   context.clip();
   context.fillStyle = '#f8f7e7';
   context.fillRect(centerX - radius, centerY - radius, diameter, diameter);
-  context.drawImage(image, centerX - (logoSize / 2), centerY - (logoSize / 2), logoSize, logoSize);
+  context.drawImage(
+    image,
+    sourceX,
+    sourceY,
+    sourceSize,
+    sourceSize,
+    centerX - (logoSize / 2),
+    centerY - (logoSize / 2) - (diameter * 0.03),
+    logoSize,
+    logoSize
+  );
   context.restore();
 }
 
@@ -448,23 +460,20 @@ async function downloadCompletionCard() {
   context.strokeStyle = 'rgba(0, 255, 157, 0.38)';
   context.lineWidth = 3;
   context.stroke();
-  context.fillStyle = '#16405a';
+  context.fillStyle = '#2a3740';
   context.beginPath();
-  context.arc(228, 800, 104, 0, Math.PI * 2);
+  context.arc(228, 800, 68, 0, Math.PI * 2);
   context.fill();
+  context.fillStyle = '#25313a';
   context.beginPath();
-  context.ellipse(228, 1035, 176, 150, 0, Math.PI, Math.PI * 2);
+  context.ellipse(228, 1050, 160, 170, 0, Math.PI, Math.PI * 2);
   context.fill();
-  context.textAlign = 'center';
-  context.fillStyle = '#ffffff';
-  context.font = '700 76px sans-serif';
-  context.fillText(agentName.charAt(0) || '요', 228, 827);
 
   const rows = [
     ['이름', agentName],
     ['역할', '국제 첩보원'],
     ['소속', '동화고등학교'],
-    [null, '4개국 활동 인증']
+    ['상태', '4개국 활동 인증']
   ];
   rows.forEach(([label, value], index) => {
     const y = 675 + (index * 94);
@@ -476,7 +485,7 @@ async function downloadCompletionCard() {
     }
     context.fillStyle = '#f3fbff';
     context.font = '700 30px sans-serif';
-    context.fillText(value, label ? 570 : 430, y + 43);
+    context.fillText(value, 570, y + 43);
     context.strokeStyle = 'rgba(126, 240, 220, 0.2)';
     context.lineWidth = 2;
     context.beginPath();
