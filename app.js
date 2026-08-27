@@ -251,18 +251,26 @@ function getSeoulDateInfo(now = new Date()) {
   };
 }
 
-function canAssignNewCertificateSequence(dateInfo) {
-  if (dateInfo.dateKey !== LIMITED_SEQUENCE_DATE_KEY) return true;
-  return dateInfo.minutesSinceMidnight >= LIMITED_SEQUENCE_START_MINUTES
-    && dateInfo.minutesSinceMidnight <= LIMITED_SEQUENCE_END_MINUTES;
+function shouldIncludeCertificateSequence(dateKey, currentDateInfo) {
+  if (dateKey !== LIMITED_SEQUENCE_DATE_KEY) return true;
+  return currentDateInfo.dateKey === LIMITED_SEQUENCE_DATE_KEY
+    && currentDateInfo.minutesSinceMidnight >= LIMITED_SEQUENCE_START_MINUTES
+    && currentDateInfo.minutesSinceMidnight <= LIMITED_SEQUENCE_END_MINUTES;
 }
 
-function getOrCreateAgentId(dateKey) {
+function getOrCreateAgentId(dateKey, currentDateInfo) {
   let agentId = localStorage.getItem('agent_id');
   const expectedPrefix = `WIB-${dateKey.slice(0, 4)}-${dateKey.slice(4)}`;
-  if (agentId?.startsWith(`${expectedPrefix}-`)) return agentId;
+  if (agentId === expectedPrefix || agentId?.startsWith(`${expectedPrefix}-`)) return agentId;
 
-  const sequenceKey = `certificate_sequence_${dateKey}`;
+  if (!shouldIncludeCertificateSequence(dateKey, currentDateInfo)) {
+    localStorage.setItem('agent_id', expectedPrefix);
+    return expectedPrefix;
+  }
+
+  const sequenceKey = dateKey === LIMITED_SEQUENCE_DATE_KEY
+    ? `certificate_sequence_${dateKey}_0930_1400`
+    : `certificate_sequence_${dateKey}`;
   const nextSequence = (Number.parseInt(localStorage.getItem(sequenceKey), 10) || 0) + 1;
   agentId = `${expectedPrefix}-${String(nextSequence).padStart(2, '0')}`;
   localStorage.setItem(sequenceKey, String(nextSequence));
@@ -280,15 +288,6 @@ function issueCompletionCard() {
   const currentDate = getSeoulDateInfo();
   let issuedDateKey = localStorage.getItem('certificate_issued_date_key');
   let issuedDate = localStorage.getItem('certificate_issued_date');
-  const hasIssuedCertificate = Boolean(
-    issuedDateKey
-    && issuedDate
-    && localStorage.getItem('agent_id')
-  );
-  if (!hasIssuedCertificate && !canAssignNewCertificateSequence(currentDate)) {
-    alert('오늘 신규 발급 순서 반영은 오전 9시 30분부터 오후 2시까지 가능합니다.');
-    return;
-  }
   if (!issuedDate || !issuedDateKey) {
     issuedDateKey = currentDate.dateKey;
     issuedDate = currentDate.displayDate;
@@ -297,7 +296,7 @@ function issueCompletionCard() {
   }
 
   document.getElementById('certificate-agent-name').textContent = agentName;
-  document.getElementById('certificate-agent-id').textContent = getOrCreateAgentId(issuedDateKey);
+  document.getElementById('certificate-agent-id').textContent = getOrCreateAgentId(issuedDateKey, currentDate);
   document.getElementById('certificate-date').textContent = issuedDate;
   const certificateModal = document.getElementById('certificate-modal');
 
