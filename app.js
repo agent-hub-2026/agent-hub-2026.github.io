@@ -223,22 +223,38 @@ function canAccessBooth(boothId, showAlert = true) {
   return false;
 }
 
-function getSeoulDateInfo() {
+const LIMITED_SEQUENCE_DATE_KEY = '20260828';
+const LIMITED_SEQUENCE_START_MINUTES = 9 * 60 + 30;
+const LIMITED_SEQUENCE_END_MINUTES = 14 * 60;
+
+function getSeoulDateInfo(now = new Date()) {
   const dateParts = new Intl.DateTimeFormat('en-CA', {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
     timeZone: 'Asia/Seoul'
-  }).formatToParts(new Date());
+  }).formatToParts(now);
   const getPart = (type) => dateParts.find((part) => part.type === type)?.value || '';
   const year = getPart('year');
   const month = getPart('month');
   const day = getPart('day');
+  const hour = Number.parseInt(getPart('hour'), 10);
+  const minute = Number.parseInt(getPart('minute'), 10);
 
   return {
     dateKey: `${year}${month}${day}`,
-    displayDate: `${year}. ${month}. ${day}.`
+    displayDate: `${year}. ${month}. ${day}.`,
+    minutesSinceMidnight: hour * 60 + minute
   };
+}
+
+function canAssignNewCertificateSequence(dateInfo) {
+  if (dateInfo.dateKey !== LIMITED_SEQUENCE_DATE_KEY) return true;
+  return dateInfo.minutesSinceMidnight >= LIMITED_SEQUENCE_START_MINUTES
+    && dateInfo.minutesSinceMidnight <= LIMITED_SEQUENCE_END_MINUTES;
 }
 
 function getOrCreateAgentId(dateKey) {
@@ -264,6 +280,15 @@ function issueCompletionCard() {
   const currentDate = getSeoulDateInfo();
   let issuedDateKey = localStorage.getItem('certificate_issued_date_key');
   let issuedDate = localStorage.getItem('certificate_issued_date');
+  const hasIssuedCertificate = Boolean(
+    issuedDateKey
+    && issuedDate
+    && localStorage.getItem('agent_id')
+  );
+  if (!hasIssuedCertificate && !canAssignNewCertificateSequence(currentDate)) {
+    alert('오늘 신규 발급 순서 반영은 오전 9시 30분부터 오후 2시까지 가능합니다.');
+    return;
+  }
   if (!issuedDate || !issuedDateKey) {
     issuedDateKey = currentDate.dateKey;
     issuedDate = currentDate.displayDate;
